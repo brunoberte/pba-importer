@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: PBA Importer
-aaPlugin URI: http://URI_Of_Page_Describing_Plugin_and_Updates
+Plugin URI: https://github.com/brunoberte/pba-importer
 Description: Plugin para importação de planos de hospedagem via Xml APi do Parallels Business Automation Standard (PBA-S)
 Version: 0.4
 Author: Bruno S. Berté

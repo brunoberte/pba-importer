@@ -1,0 +1,18 @@
+vi /etc/hspcd/conf/hspc_frontend.conf 
+
+de:
+
+# Thirdly, deny XML-API access by default
+<Location /hspc/xml-api>
+        Order Deny,Allow
+        Deny from all
+</Location>
+
+
+para:
+
+# Thirdly, deny XML-API access by default
+<Location /hspc/xml-api>
+        Order Deny,Allow
+        Allow from all
+</Location>

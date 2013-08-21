@@ -1,0 +1,12 @@
+{
+    "require": {
+	"symfony/finder": "v2.3.0",
+	"symfony/class-loader": "v2.3.0",
+	"symfony/event-dispatcher": "v2.3.0",
+	"symfony/http-foundation": "v2.3.0",
+	"symfony/routing": "v2.3.0",
+	"symfony/http-kernel": "v2.3.0",
+	"symfony/config": "v2.3.0",
+	"symfony/yaml": "2.2.*"
+    }
+}

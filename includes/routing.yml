@@ -1,0 +1,175 @@
+indexpage:
+    pattern:  /
+    defaults: { _controller: Entity\StoreController::indexAction }
+
+homepage:
+    pattern:  /{_locale}/
+    defaults: { _controller: Entity\StoreController::indexAction }
+
+stepback:
+    pattern:  /{_locale}/step_back
+    defaults: { _controller: Entity\StoreController::indexBackAction }
+
+resetcart:
+    pattern:  /{_locale}/reset_cart
+    defaults: { _controller: Entity\StoreController::indexResetAction }
+
+domains:
+    pattern:  /{_locale}/domains
+    defaults: { _controller: Entity\StoreController::domainsAction }
+
+signin:
+    pattern:  /{_locale}/signin
+    defaults: { _controller: Entity\StoreController::signinAction }
+
+logoff:
+    pattern:  /{_locale}/logoff
+    defaults: { _controller: Entity\StoreController::logoffAction }
+
+configure:
+    pattern:  /{_locale}/configure/{plan_id}
+    defaults: { _controller: Entity\StoreController::configureAction }    
+
+show_checkout:
+    pattern:  /{_locale}/show-checkout
+    defaults: { _controller: Entity\StoreController::showCheckoutAction }
+
+process_checkout:
+    pattern:  /{_locale}/process-checkout
+    defaults: { _controller: Entity\StoreController::processCheckoutAction }
+
+shoppingcart:
+    pattern:  /{_locale}/shoppingcart
+    defaults: { _controller: Entity\StoreController::shoppingcartAction }
+
+payment:
+    pattern:  /{_locale}/payscreen
+    defaults: { _controller: Entity\StoreController::showPaymentAction }
+
+paymentstatus:
+    pattern:  /{_locale}/paymentstatus
+    defaults: { _controller: Entity\StoreController::paymentStatusAction }
+
+process_payment:
+    pattern:  /{_locale}/payment/{url}
+    defaults: { _controller: Entity\StoreController::processPaymentAction, url: none }
+
+accountingdata:
+    pattern:  /{_locale}/accountingdata
+    defaults: { _controller:Entity\StoreController::getAccountingDataAction }
+
+confirmation:
+    pattern:  /{_locale}/confirmation
+    defaults: { _controller: Entity\StoreController::showConfirmationAction }
+
+getcontent:
+    pattern:  /{_locale}/getcontent/{type}/{id}/{plan_id}
+    defaults: { _controller: Entity\StoreController::getContentAction }
+
+getplangroup:
+    pattern:  /{_locale}/getplangroup/{id}
+    defaults: { _controller: Entity\StoreController::getPlanGroupAction }
+
+getperiods:
+    pattern:  /{_locale}/getperiods/{plan_id}
+    defaults: { _controller: Entity\StoreController::getPeriodsAction }
+
+getdomainstab:
+    pattern:  /{_locale}/getdomainstab
+    defaults: { _controller: Entity\StoreController::getDomainsTabAction }
+
+getresources:
+    pattern:  /{_locale}/getresources
+    defaults: { _controller: Entity\StoreController::getResourcesAction }
+
+getpopupheader:
+    pattern:  /{_locale}/getpopupheader/{type}/{attr}
+    defaults: { _controller: Entity\StoreController::getPopupHeader, type: null, attr: null }
+
+getsigninform:
+    pattern:  /{_locale}/getsigninform/{plan_id}
+    defaults: { _controller: Entity\StoreController::getSignInForm }
+
+updateconfiguration:
+    pattern:  /{_locale}/updateconfiguration/{plan_id}
+    defaults: { _controller: Entity\StoreController::updateConfigurationAction }
+
+updateconfigparam:
+    pattern:  /{_locale}/updateconfigparam/{plan_id}/{param}
+    defaults: { _controller: Entity\StoreController::updateConfigParamAction }    
+
+updateresource:
+    pattern:  /{_locale}/updateresource/{plan_id}/{short_name}/{value}
+    defaults: { _controller: Entity\StoreController::updateResourceAction }
+
+updateapplication:
+    pattern:  /{_locale}/updateapplication/{plan_id}/{panel_id}/{app_id}/{enable}
+    defaults: { _controller: Entity\StoreController::updateApplicationAction }
+
+updatepanel:
+    pattern:  /{_locale}/updatepanel/{plan_id}/{panel_id}/{os_tmpl}
+    defaults: { _controller: Entity\StoreController::updatePanelAction }
+
+updateshoppingcart:
+    pattern:  /{_locale}/updateshoppingcart/{plan_id}/{group_id}/{os_tmpl}/{period}/{platform}
+    defaults: { _controller: Entity\StoreController::updateShoppingCartAction }
+
+updatelicense:
+    pattern:  /{_locale}/updatelicense/{plan_id}
+    defaults: { _controller: Entity\StoreController::updateLicenseAction }
+
+updateattribute:
+    pattern:  /{_locale}/updateattribute/{plan_id}/{input_id}/{enable}/{value}
+    defaults: { _controller: Entity\StoreController::updateAttributeAction }    
+
+clearshoppingcart:
+    pattern:  /{_locale}/clearshoppingcart/{plan_id}
+    defaults: { _controller: Entity\StoreController::clearShoppingCartAction }
+
+domaincontacts:
+    pattern:  /{_locale}/domaincontacts/{domain}/{contact_type}/{contact_id}/{action}
+    defaults: { _controller: Entity\StoreController::domainContactsAction, contact_id: 0, action: null }
+
+parsecsr:
+    pattern:  /{_locale}/parsecsr/{plan_id}
+    defaults: { _controller: Entity\StoreController::parsecsrAction }
+
+approverlist:
+    pattern:  /{_locale}/approverlist/{plan_id}
+    defaults: { _controller: Entity\StoreController::getApproverListAction }
+
+certform:
+    pattern:  /{_locale}/certform/{plan_id}
+    defaults: { _controller: Entity\StoreController::getCertFormAction }
+
+dsredirectform:
+    pattern:  /{_locale}/3dsredirect
+    defaults: { _controller: Entity\StoreController::dsRedirectFormAction }
+
+aboutus:
+    pattern:  /{_locale}/aboutus
+    defaults: { _controller: Entity\StoreController::showAboutUsAction }
+
+contacts:
+    pattern:  /{_locale}/contacts
+    defaults: { _controller: Entity\StoreController::showContactsAction }
+
+partners:
+    pattern:  /{_locale}/partners
+    defaults: { _controller: Entity\StoreController::showPartnersAction }
+
+information:
+    pattern:  /{_locale}/information/{source}
+    defaults: { _controller: Entity\StoreController::showInformationAction, source: account_agreement_text }
+
+whois:
+    pattern:  /{_locale}/whois/{domain}
+    defaults: { _controller: Entity\StoreController::showWhoisAction, domain: null }
+
+oldcpdomains:
+    pattern:  /domains.php/{_locale}
+    defaults: { _controller: Entity\StoreController::redirect2DomainsTabAction, _locale: en }
+
+oldcpplans:
+    pattern:  /plans.php/{_locale}
+    defaults: { _controller: Entity\StoreController::redirect2PlansTabAction, _locale: en }

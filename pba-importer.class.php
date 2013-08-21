@@ -10,7 +10,7 @@ class PbaImporter
 
 	function PbaImporter()
 	{
-		$this->local_version = '0.4.1';
+		$this->local_version = '0.5';
 
 		$this->plugin_url = defined('WP_PLUGIN_URL') ?
 							trailingslashit(WP_PLUGIN_URL . '/' . dirname(plugin_basename(__FILE__))) :

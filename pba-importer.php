@@ -3,7 +3,7 @@
 Plugin Name: PBA Importer
 Plugin URI: https://github.com/brunoberte/pba-importer
 Description: Plugin para importação de planos de hospedagem via Xml APi do Parallels Business Automation Standard (PBA-S)
-Version: 0.4
+Version: 0.4.1
 Author: Bruno S. Berté
 Author URI: http://about.me/brunoberte
 License: GPL2

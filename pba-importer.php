@@ -31,7 +31,7 @@ require_once(dirname(__FILE__) . '/includes/__updater.php');
 if (is_admin()) { // note the use of is_admin() to double check that this is happening in the admin
     $config = array(
         'slug' => plugin_basename(__FILE__), // this is the slug of your plugin
-        'proper_folder_name' => 'plugin-name', // this is the name of the folder your plugin lives in
+        'proper_folder_name' => 'pba-importer', // this is the name of the folder your plugin lives in
         'api_url' => 'https://api.github.com/repos/brunoberte/pba-importer', // the github API url of your github repo
         'raw_url' => 'https://raw.github.com/brunoberte/pba-importer/master', // the github raw url of your github repo
         'github_url' => 'https://github.com/brunoberte/pba-importer', // the github url of your github repo

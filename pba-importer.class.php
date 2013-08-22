@@ -33,7 +33,7 @@ class PbaImporter
 
 		//add_action('wp_head', array($this, 'addHeaderCode'), 1);
 
-		add_action( 'admin_head', array( $this, 'plugin_header' ) );
+		add_action('admin_head', array( $this, 'plugin_header' ) );
 
 		add_action('admin_menu', array($this, 'add_menu_items'));
 
@@ -423,9 +423,26 @@ class PbaImporter
 <?php
 	}
 	
+	function valida_dominio($dominio) {
+		
+		$_SESSION['account']['account_id'] = null;
+		
+		$domain_names = array($dominio);
+		$series_key = 1;
+		$dm_action = 'register_new';
+		$check_error_info = true;
+		$obj = null;
+		
+		$a = check_domains($domain_names, $series_key, $dm_action, $check_error_info, $obj);
+		echo '<pre>';
+		print_r($a);
+		echo '</pre>';
+	}
 	
 	function handle_planos() { 
 	
+		//$this->valida_dominio('meugoogle.com.br');
+		
 		
 		// If form was submitted
 		if ( isset( $_POST['submitted'] ) ) {			
@@ -602,13 +619,24 @@ class PbaImporter
 		}
 
 
+		$ret .= '<input type="hidden" id="pba_domain" value="'.(isset($_SESSION['pba_domain']) ? $_SESSION['pba_domain'] : '').'" />';
+		$ret .= '<input type="hidden" id="pba_tld"    value="'.(isset($_SESSION['pba_tld'])    ? $_SESSION['pba_tld']    : '').'" />';
+		$ret .= '<div id="res"></div>';
+
 		//script
 		$script = '
 		<script type="text/javascript">
 		<!--
-						
+			
+			var plan_id_sel = \'\';
+			var period_sel = \'\';
+				
 			jQuery(\'.btselplano\').click(function(e) {
-				seleciona_plano(jQuery(this).data(\'plan_id\'), jQuery(this).data(\'period\'));
+			
+				plan_id_sel = jQuery(this).data(\'plan_id\');
+				period_sel = jQuery(this).data(\'period\');
+
+				seleciona_plano(plan_id_sel, period_sel);
 				
 				e.preventDefault();
 			});
@@ -619,16 +647,54 @@ class PbaImporter
 					dataType: \'jsonp\',
 					url: \''.$this->options['shop_url'].'updateshoppingcart/\'+id+\'/_plans_\'+id+\'/undefined/\'+period+\'/undefined\',
 					jsonp: \'void\',
-					success: function () {
-						//window.location = \''.$this->options['shop_url'].'\';
-					},
-					complete:function () {
-						window.location = \''.$this->options['shop_url'].'\';
-					},
+					complete: function(){ 
+						seleciona_plano_complete(); 
+					}
 				});
-
+				
 			}
 			
+			function seleciona_plano_complete() {
+			
+				var domain = jQuery(\'#pba_domain\').val();
+				
+				if (domain != \'\') {
+					seleciona_dominio();
+				} else {
+					//window.location = \''.$this->options['shop_url'].'\';
+				}
+						
+			}
+			
+			function seleciona_dominio() {
+
+				jQuery.post(
+					\'' . $this->options['shop_url'] . 'domains\',
+					{
+						action: 				\'check_domains\',
+						series_key: 			\'1\',
+						plan_id: 				plan_id_sel,
+						dm_action: 				\'register_new\',
+						domain_selection_type: 	\'single\',
+						domain_name: 			jQuery(\'#pba_domain\').val(),
+						\'tld[]\': 				jQuery(\'#pba_tld\').val()
+					},
+					function (data) {
+						
+						jQuery(\'#res\').html(\'<iframe></iframe>\');
+						jQuery(\'#res iframe\').contents().find(\'body\').html(data.html);
+						
+						jQuery(\'#res iframe\').ready(function(){
+							window.location = \''.$this->options['shop_url'].'\';
+						});
+						
+						jQuery(\'#res iframe\').contents().find(\'form\').attr(\'action\', \'' . $this->options['shop_url'] . 'domains\').submit();
+						
+					}
+				);
+				
+			}
+		
 		//-->
 		</script>
 		';

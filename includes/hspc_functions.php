@@ -35,7 +35,7 @@ function check_domains ($domain_names, $series_key, $dm_action = 'register_new',
 				}
 			}
 		}
-		return $domain_list['available_domain_list'];
+		return $domain_list;//['available_domain_list'];
 	}
 	return array();
 }

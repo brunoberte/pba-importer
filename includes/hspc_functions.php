@@ -30,9 +30,11 @@ function check_domains ($domain_names, $series_key, $dm_action = 'register_new',
 			}
 			foreach($domain_list['domain_error_info'] AS $domain_name => $error) {
 				$_SESSION['domain_error_info'][$domain_name] = $error;
+/*
 				if($error != 'FOREIGN_SUBDOMAIN') {
 					get_error_handler()->add(MC_ERROR, null, sprintf($obj->string($error), $domain_name));
 				}
+*/
 			}
 		}
 		return $domain_list;//['available_domain_list'];

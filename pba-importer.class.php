@@ -39,11 +39,6 @@ class PbaImporter
 
 		register_activation_hook(__FILE__, array($this, 'install'));
 
-		/**
- 		 * use hook, to integrate new widget
- 		 */
-		add_action('wp_dashboard_setup', array($this, 'my_wp_dashboard_setup'));
-
 	}	
 
 	function addHeaderCode() {
@@ -423,27 +418,8 @@ class PbaImporter
 <?php
 	}
 	
-	function valida_dominio($dominio) {
-		
-		$_SESSION['account']['account_id'] = null;
-		
-		$domain_names = array($dominio);
-		$series_key = 1;
-		$dm_action = 'register_new';
-		$check_error_info = true;
-		$obj = null;
-		
-		$a = check_domains($domain_names, $series_key, $dm_action, $check_error_info, $obj);
-		echo '<pre>';
-		print_r($a);
-		echo '</pre>';
-	}
-	
 	function handle_planos() { 
 	
-		//$this->valida_dominio('meugoogle.com.br');
-		
-		
 		// If form was submitted
 		if ( isset( $_POST['submitted'] ) ) {			
 			check_admin_referer( 'pba-importer' );
@@ -559,11 +535,52 @@ class PbaImporter
 	function check($the_content, $side = 0)
 	{
     	$the_content = str_replace('[pba-importer]', $this->montaHtmlPlanos(), $the_content);
+    	$the_content = str_replace('[pba-importer-planos]', $this->montaHtmlPlanos(), $the_content);
+    	$the_content = str_replace('[pba-importer-check-domain]', $this->checkDomain(), $the_content);
 
         return $the_content;
 	}
+	
+	function checkDomain() {
+		$_SESSION['account']['account_id'] = null;
+		
+		$ret = '';
+		
+		$dominio = '';
+		
+		if(isset($_GET['domain'])) {
+			$dominio = $_GET['domain'] . '' . (isset($_GET['tld']) ? $_GET['tld'] : 'com.br');
+		}
+		if(isset($_POST['domain'])) {
+			$dominio = $_POST['domain'] . '' . (isset($_POST['tld']) ? $_POST['tld'] : 'com.br');
+		}
+		
+		if($dominio != '') {
+		
+			$domain_names = array($dominio);
+			$series_key = 1;
+			$dm_action = 'register_new';
+			$check_error_info = true;
+			$obj = null;
+			
+			$a = check_domains($domain_names, $series_key, $dm_action, $check_error_info, $obj);
+			
+			if( count($a['available_domain_list']) > 0 ) {
+				
+				$ret .= '<h2>O domínio <strong>'.$dominio.'</strong> está disponível.</h2>';
+				$ret .= '<p>Escolha um de nossos planos de hospedagem</p>';
+				
+			} else {
+				
+				$ret .= '<h2>Infelizmente o domínio <strong>'.$dominio.'</strong> não está disponível</h2>';
+				
+			}
+		}
+	
+		return $ret;		
+	}
 
-	function montaHtmlPlanos()
+	function montaHtmlPlanos($row_class = 'row-fluid plans', $index_destaque = false)
 	{
 		global $wpdb;
 
@@ -580,17 +597,25 @@ class PbaImporter
 		
 		$planos = array();
 		
+		$i = 0;
 		foreach($result as $item) {
 			
+			$class_item = 'item_table';
+			if ($i === $index_destaque) {
+				$class_item .= ' promotion_table';
+			}
+			$i++;
+			
 			$a = '
-			<div class="span3">
-				<div class="item_table">
+			<div class="span4">
+				<div class="'.$class_item.'">
 		            <div class="head_table">
 		                <span class="arrow_table"></span>
 		                <h1>' . $item->nome  .'</h1>
-		                <h2>' . number_format($item->valor_mensal, '2', ',', '.') . '<span> / Mês</span></h2>
-		                <h5>Ou ' . number_format($item->valor_anual, '2', ',', '.') . ' / Ano</h5>
+		                <h2>' . number_format($item->valor_mensal, '2', ',', '.') . '<span> / mês*</span></h2>
+		                <h5>Ou ' . number_format($item->valor_anual, '2', ',', '.') . ' por ano!</h5>
 		            </div>
+		            <a class="button btselplano" data-plan_id="'.$item->series_key.'" data-period="'.$item->period.'" href="#">Desejo Este!</a>
 		            <ul>';
 		   $aux = explode("\n", $item->descricao);
 		   $class = 'color';
@@ -600,8 +625,7 @@ class PbaImporter
 			   $class = $class == 'color' ? '' : 'color';
 		   }		                
 			$a .= ' 
-					</ul> 
-		            <a class="button btselplano" data-plan_id="'.$item->series_key.'" data-period="'.$item->period.'" href="#">Desejo Este!</a>
+					</ul>
 		        </div>
 	        </div>';
 	        
@@ -609,19 +633,26 @@ class PbaImporter
 		}
 
 		$ret = '';
-		//Divide em 4 por linha
-		$qtd = ceil(count($planos) / 4);
+		//Divide em 3 por linha
+		$qtd = ceil(count($planos) / 3);
 		for($i = 0; $i < $qtd; $i++)
 		{ 
-			$ret .= '<div class="row-fluid">';
-				$ret .= implode('', array_slice($planos, $i * 4, 4));
+			$ret .= '<div class="'.$row_class.'">';
+				$ret .= implode('', array_slice($planos, $i * 3, 3));
 			$ret .= '</div>';
 		}
 
+		$domain = (isset($_GET['domain']) ? $_GET['domain'] : isset($_POST['domain']) ? $_POST['domain'] : '');
+		$tld    = (isset($_GET['tld'])    ? $_GET['tld']    : isset($_POST['tld'])    ? $_POST['tld']    : 'com.br');
+		if(substr($tld, 0, 1) == '.') {
+			$tld = substr($tld, 1);
+		}
 
-		$ret .= '<input type="hidden" id="pba_domain" value="'.(isset($_SESSION['pba_domain']) ? $_SESSION['pba_domain'] : '').'" />';
-		$ret .= '<input type="hidden" id="pba_tld"    value="'.(isset($_SESSION['pba_tld'])    ? $_SESSION['pba_tld']    : '').'" />';
-		$ret .= '<div id="res"></div>';
+		$ret .= '<input type="hidden" id="pba_domain" value="'.$domain.'" />';
+		$ret .= '<input type="hidden" id="pba_tld"    value="'.$tld.'" />';
+		$ret .= '<div id="res" style="display:none;"></div>';
+		
+		$ret .= '<p class="center">Escolha a opção mais adequada para você!<br>* Valores para contratação de 3 anos.</p>';
 
 		//script
 		$script = '
@@ -661,7 +692,7 @@ class PbaImporter
 				if (domain != \'\') {
 					seleciona_dominio();
 				} else {
-					//window.location = \''.$this->options['shop_url'].'\';
+					window.location = \''.$this->options['shop_url'].'\';
 				}
 						
 			}
@@ -681,14 +712,20 @@ class PbaImporter
 					},
 					function (data) {
 						
-						jQuery(\'#res\').html(\'<iframe></iframe>\');
-						jQuery(\'#res iframe\').contents().find(\'body\').html(data.html);
+						if( data.result == \'success\') {
 						
-						jQuery(\'#res iframe\').ready(function(){
-							window.location = \''.$this->options['shop_url'].'\';
-						});
-						
-						jQuery(\'#res iframe\').contents().find(\'form\').attr(\'action\', \'' . $this->options['shop_url'] . 'domains\').submit();
+							jQuery(\'#res\').html(\'<iframe></iframe>\');
+							jQuery(\'#res iframe\').contents().find(\'body\').html(data.html);
+							
+							jQuery(\'#res iframe\').ready(function(){
+								window.location = \''.$this->options['shop_url'].'\';
+							});
+							
+							jQuery(\'#res iframe\').contents().find(\'form\').attr(\'action\', \'' . $this->options['shop_url'] . 'domains\').submit();
+
+						} else {
+							alert(\'Erro ao selecionar dominio\')
+						}
 						
 					}
 				);

@@ -84,7 +84,8 @@ class HspcApi
 					'name' => $v['name'],
 					'series_key' => $v['series_key'],
 					'period' => $period,
-					'description' => strip_tags($v['description']),
+					'description' => strip_tags($v['description'], '<strong>'),
+					'summary' => strip_tags($v['summary']),
 					'preco_anual' => $preco_anual,
 					'preco_mensal' => $preco_mensal,
 				);

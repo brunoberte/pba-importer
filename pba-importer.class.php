@@ -39,7 +39,19 @@ class PbaImporter
 
 		register_activation_hook(__FILE__, array($this, 'install'));
 
+		wp_schedule_event(time(), 'hourly', 'cron_update_plans');
 	}	
+	
+	function cron_update_plans() {
+		$hspc_url = $this->options['hspc_url'];
+		$hspc_login = $this->options['hspc_login'];
+		$hspc_pass = $this->options['hspc_pass'];
+
+		$HspcApi = new HspcApi($hspc_url, $hspc_login, $hspc_pass);
+		$planos = $HspcApi->get_planos();
+		
+		$this->update_planos($planos);
+	}
 
 	function addHeaderCode() {
 /* 		echo '<link type="text/css" rel="stylesheet" href="' . get_bloginfo('wpurl') . '/wp-content/plugins/listavip/css/message.min.css" />' . "\n"; */
@@ -493,6 +505,7 @@ class PbaImporter
 					`period`,
 					`nome`,
 					`descricao`,
+					`summary`,
 					`valor_anual`,
 					`valor_mensal`
 				)
@@ -502,6 +515,7 @@ class PbaImporter
 					\''.$plano['period'].'\',
 					\''.$plano['name'].'\',
 					\''.$plano['description'].'\',
+					\''.$plano['summary'].'\',
 					\''.$plano['preco_anual'].'\',
 					\''.$plano['preco_mensal'].'\'
 				)';
@@ -617,13 +631,15 @@ class PbaImporter
 		            </div>
 		            <a class="button btselplano" data-plan_id="'.$item->series_key.'" data-period="'.$item->period.'" href="#">Desejo Este!</a>
 		            <ul>';
-		   $aux = explode("\n", $item->descricao);
-		   $class = 'color';
-		   foreach($aux as $aux2) {
-			   $a .= '<li class="'.$class.'">'.$aux2.'</li>';
-			   
-			   $class = $class == 'color' ? '' : 'color';
-		   }		                
+			$aux = explode("\n", $item->descricao);
+			$class = 'color';
+			foreach($aux as $aux2) {
+				if($aux2 != '') {
+					$a .= '<li class="'.$class.'">'.$aux2.'</li>';
+					
+					$class = $class == 'color' ? '' : 'color';
+				}
+			}		                
 			$a .= ' 
 					</ul>
 		        </div>
@@ -753,6 +769,7 @@ class PbaImporter
 			`period` varchar(30) NULL,
 			`nome` varchar(100) not NULL ,
 			`descricao` text NULL ,
+			`summary` text NULL ,
 			`valor_anual` decimal(10,2) default 0 ,
 			`valor_mensal` decimal(10,2) default 0 ,
 			PRIMARY KEY (`id`) 

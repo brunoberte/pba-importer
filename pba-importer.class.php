@@ -557,6 +557,8 @@ class PbaImporter
 	
 	function checkDomain() {
 		$_SESSION['account']['account_id'] = null;
+		$_SESSION['hspc_sid'] = null;
+		$_SESSION['hspc_server_name'] = null;
 		
 		$ret = '';
 		
@@ -625,9 +627,9 @@ class PbaImporter
 				<div class="'.$class_item.'">
 		            <div class="head_table">
 		                <span class="arrow_table"></span>
-		                <h1>' . $item->nome  .'</h1>
-		                <h2>' . number_format($item->valor_mensal, '2', ',', '.') . '<span> / mês*</span></h2>
-		                <h5>Ou ' . number_format($item->valor_anual, '2', ',', '.') . ' por ano!</h5>
+		                <h1>' . $item->summary  .'</h1>
+		                <h2>R$ ' . number_format($item->valor_mensal, '2', ',', '.') . '<span> / mês*</span></h2>
+		                <h5>Ou R$ ' . number_format($item->valor_anual, '2', ',', '.') . ' por ano!</h5>
 		            </div>
 		            <a class="button btselplano" data-plan_id="'.$item->series_key.'" data-period="'.$item->period.'" href="#">Desejo Este!</a>
 		            <ul>';

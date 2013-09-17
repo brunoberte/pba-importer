@@ -23,6 +23,9 @@ class HspcApi
 	
 	function get_planos() {
 		
+		$_SESSION['hspc_sid'] = null;
+		$_SESSION['hspc_server_name'] = null;
+		
 		$ret = get_sellable_plan_list();
 
 		$planos = array();

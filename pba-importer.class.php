@@ -40,6 +40,7 @@ class PbaImporter
 		register_activation_hook(__FILE__, array($this, 'install'));
 
 		wp_schedule_event(time(), 'hourly', 'cron_update_plans');
+		
 	}	
 	
 	function cron_update_plans() {
@@ -48,9 +49,12 @@ class PbaImporter
 		$hspc_pass = $this->options['hspc_pass'];
 
 		$HspcApi = new HspcApi($hspc_url, $hspc_login, $hspc_pass);
-		$planos = $HspcApi->get_planos();
 		
+		$planos = $HspcApi->get_planos();
 		$this->update_planos($planos);
+		
+		$tlds = $HspcApi->get_tlds();
+		$this->update_tlds($tlds);
 	}
 
 	function addHeaderCode() {
@@ -431,7 +435,7 @@ class PbaImporter
 	}
 	
 	function handle_planos() { 
-	
+		
 		// If form was submitted
 		if ( isset( $_POST['submitted'] ) ) {			
 			check_admin_referer( 'pba-importer' );
@@ -443,9 +447,12 @@ class PbaImporter
 				$hspc_pass = $this->options['hspc_pass'];
 
 				$HspcApi = new HspcApi($hspc_url, $hspc_login, $hspc_pass);
-				$planos = $HspcApi->get_planos();
 				
+				$planos = $HspcApi->get_planos();
 				$this->update_planos($planos);
+				
+				$tlds = $HspcApi->get_tlds();
+				$this->update_tlds($tlds);
 				
 				// Show message
 				echo '<div id="message" class="updated fade"><p>' . __( 'Planos atualizados', 'pba-importer' ) . '</p></div>';
@@ -465,6 +472,9 @@ class PbaImporter
 		$actionurl = stripslashes(htmlentities(strip_tags($_SERVER['REQUEST_URI'])));
 		$nonce = wp_create_nonce( 'pba-importer' );
 		
+		$tlds = get_option( 'pba-tld-list' );
+		$updatetime = get_option( 'pba-updatetime' );
+		
 		
 		echo '<div class="wrap">';
 			screen_icon();
@@ -472,7 +482,7 @@ class PbaImporter
 			echo '<a href="admin.php?page=pba-importer_settings">'; _e( 'Configurações', 'pba-importer' ); echo '</a> &nbsp;|&nbsp; <a href="admin.php?page=pba-importer_planos">'; _e( 'Planos', 'pba-importer' );echo '</a>';
 			echo '<div id="poststuff" style="margin-top:10px;">';
 				echo '<div class="dbx-content">';
-				
+
 					echo '<form name="pba-importer_form" action="'. $actionurl.'" method="post">';
 						echo '<input type="hidden" name="submitted" value="1" /> ';
 						echo '<input type="hidden" id="_wpnonce" name="_wpnonce" value="'. $nonce.'" />';
@@ -481,6 +491,12 @@ class PbaImporter
 					echo '</form>';
 
 					echo $this->montaHtmlPlanos();
+
+					echo '<h3>TLD\'s</h3>';
+					echo implode(' ', $tlds);
+
+					echo '<h3>Data atualização</h3>';
+					echo '<p>'.date('d/m/Y H:i:s', $updatetime) . '</p>';
 				
 				echo '</div>';
 			echo '</div>';
@@ -530,6 +546,16 @@ class PbaImporter
 		
 	}
 	
+	function update_tlds($tlds) {
+		
+		delete_option('pba-tld-list');
+		add_option('pba-tld-list', $tlds, false, 'no');
+
+		delete_option('pba-updatetime');
+		add_option('pba-updatetime', time(), false, 'no');
+		
+	}
+	
 	
 	
 	
@@ -565,10 +591,10 @@ class PbaImporter
 		$dominio = '';
 		
 		if(isset($_GET['domain'])) {
-			$dominio = $_GET['domain'] . '' . (isset($_GET['tld']) ? $_GET['tld'] : 'com.br');
+			$dominio = $_GET['domain'] . '.' . (isset($_GET['tld']) ? $_GET['tld'] : 'com.br');
 		}
 		if(isset($_POST['domain'])) {
-			$dominio = $_POST['domain'] . '' . (isset($_POST['tld']) ? $_POST['tld'] : 'com.br');
+			$dominio = $_POST['domain'] . '.' . (isset($_POST['tld']) ? $_POST['tld'] : 'com.br');
 		}
 		
 		if($dominio != '') {
@@ -758,6 +784,15 @@ class PbaImporter
 
         return $ret . $script;
 	}
+	
+	function getTlds() {
+		$tlds = get_option( 'pba-tld-list' );
+		if(!$tlds) {
+			$tlds = array('com.br', 'com', 'net');
+		}
+		
+		return $tlds;
+	}
 
     function install()
     {
@@ -778,6 +813,8 @@ class PbaImporter
 		)";
 
 		$wpdb->query($sql1);
+		
+		add_option('pba-tld-list', array('com.br', 'com', 'net'), false, 'no');
     }
 
 

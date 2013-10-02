@@ -9,6 +9,8 @@ Author URI: http://about.me/brunoberte
 License: GPL2
 */
 
+date_default_timezone_set('America/Sao_Paulo');
+
 $GLOBALS['StoreConf']['DEBUG_MODE'] = false;
 
 ini_set('display_errors', 1);

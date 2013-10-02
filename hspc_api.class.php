@@ -25,6 +25,9 @@ class HspcApi
 		
 		$dm_plan_id = 1;
 
+		$_SESSION['package'] = null;
+		$GLOBALS['StoreConf']['LOOKUP_EXTRA_TLDS'] = '';
+
 		$ret = $this->load_domain_package();
 		$tlds = $_SESSION['domain_package'][$dm_plan_id]['tlds_for_registration'];
 

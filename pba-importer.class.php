@@ -622,7 +622,7 @@ class PbaImporter
 		return $ret;		
 	}
 
-	function montaHtmlPlanos($row_class = 'row-fluid plans', $index_destaque = false)
+	function montaHtmlPlanos($row_class = 'row-fluid plans', $index_destaque = false, $campo_detalhes = 'summary')
 	{
 		global $wpdb;
 
@@ -659,7 +659,7 @@ class PbaImporter
 		            </div>
 		            <a class="button btselplano" data-plan_id="'.$item->series_key.'" data-period="'.$item->period.'" href="#">Desejo Este!</a>
 		            <ul>';
-			$aux = explode("\n", $item->descricao);
+			$aux = explode("\n", $item->{$campo_detalhes});
 			$class = 'color';
 			foreach($aux as $aux2) {
 				if($aux2 != '') {
